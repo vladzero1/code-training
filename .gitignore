@@ -67,3 +67,8 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+
+.vscode
+node_modules
+pnpm-lock.yaml
+ts-playground/dist
