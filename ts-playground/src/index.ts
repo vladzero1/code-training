@@ -1,49 +1,48 @@
 class Solution {
     /**
-     * @param {string} s
-     * @param {string} t
-     * @return {boolean}
+     * @param {number[]} nums
+     * @param {number} target
+     * @return {number[]}
      */
-    isAnagram(s: string, t: string): boolean {
-        const sHashMaps = new Map<string, number>();
-        for (const char of s) {
-            const count = sHashMaps.get(char)
-            if (count !== undefined) {
-                sHashMaps.set(char, count + 1)
+    twoSum(nums: number[], target: number): number[] {
+        // key = number, value = index of the number
+        const hashMaps = new Map<number, number[]>()
+        for (let index = 0; index < nums.length; index++) {
+            const num = nums[index]!;
+            const indexes = hashMaps.get(num);
+            if (indexes) {
+                indexes.push(index)
+                hashMaps.set(num, indexes)
                 continue
             }
 
-            sHashMaps.set(char, 1)
+            hashMaps.set(num, [index])
         }
 
-        const tHashMaps = new Map<string, number>();
-        for (const char of t) {
-            const count = tHashMaps.get(char)
-            if (count !== undefined) {
-                tHashMaps.set(char, count + 1)
-                continue
-            }
+        // find the difference and check it on the hashmap created previously
+        for (let index = 0; index < nums.length; index++) {
+            const num = nums[index]!;
+            const diff = target - num;
+            const indexes = hashMaps.get(diff)
+            if (indexes !== undefined && indexes.length > 0) {
+                if (indexes[0] === index) {
+                    if (indexes[1]) {
+                        return [index, indexes[1]]
+                    }
+                    continue
+                }
 
-            tHashMaps.set(char, 1)
-        }
-
-        if(sHashMaps.size !== tHashMaps.size){
-            return false
-        }
-
-        // check all char count
-        for (const [char, sCount] of sHashMaps) {
-            const tCount = tHashMaps.get(char)
-            if(sCount !== tCount){
-                return false
+                return [index, indexes[0]!]
             }
         }
 
-        return true
+        return [0, 0]
     }
 }
 
+
 const obj = new Solution();
-console.log(obj.isAnagram("racecar", "carrace"))
-console.log(obj.isAnagram("jar", "jam"))
-console.log(obj.isAnagram("a", "ab"))
+// console.log(obj.twoSum([3, 4, 4, 5, 4, 6], 7))
+// console.log(obj.twoSum([4, 5, 6], 10))
+// console.log(obj.twoSum([5, 5], 10))
+console.log(obj.twoSum([1, 3, 4, 2], 6))
