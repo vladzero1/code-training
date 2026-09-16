@@ -1,77 +1,77 @@
 class Solution {
     /**
-     * @param {number[]} nums
-     * @param {number} k
-     * @return {number[]}
+     * @param {string[]} strs
+     * @returns {string}
      */
-    topKFrequent(nums: number[], k: number): number[] {
-        const numCountMap = new Map<number, number>();
-        for (const num of nums) {
-            const numCount = numCountMap.get(num)
-            if (numCount) {
-                const newNumCount = numCount + 1
-                numCountMap.set(num, newNumCount)
-                continue
-            }
-            numCountMap.set(num, 1)
+    private delimiter = "+"
+    encode(strs: string[]): string {
+        if (strs.length === 0) {
+            return ""
         }
-        const findLowestCount = (arr: Array<{ num: number, numCount: number }>): [number, number] => {
-            let lowestNumIdx = -1;
-            let lowestCount = -1;
-            for (let index = 0; index < arr.length; index++) {
-                const { numCount } = arr[index]!;
-                if (lowestCount === -1) {
-                    lowestNumIdx = index;
-                    lowestCount = numCount
-                    continue
-                }
-
-                if (lowestCount > numCount) {
-                    lowestNumIdx = index;
-                    lowestCount = numCount
-                }
-            }
-
-            return [lowestNumIdx, lowestCount]
+        let sizePerGroup = ""
+        let result = ""
+        for (const str of strs) {
+            sizePerGroup = sizePerGroup.concat(str.length.toString()).concat(",")
+            result = result.concat(str)
         }
 
-        const topK = new Array<{ num: number, numCount: number }>();
-        let loopCount = 0;
-        let lowestNumIdx = -1;
-        let lowestCount = -1;
-        for (const [num, numCount] of numCountMap) {
-            // insert till k count
-            if (loopCount < k) {
-                topK.push({
-                    num: num,
-                    numCount: numCount
-                })
-                if (lowestCount > numCount || lowestCount == -1) {
-                    lowestCount = numCount
-                    lowestNumIdx = loopCount
+        let finalResult = sizePerGroup.concat(this.delimiter).concat(result)
+        return finalResult
+    }
+
+    /**
+     * @param {string} str
+     * @returns {string[]}
+     */
+    decode(str: string): string[] {
+        if (str.length === 0) {
+            return []
+        }
+
+        let tempChar = ""
+        let lengths: number[] = []
+        let result: string[] = []
+        let isDelimiterFound = false
+        let tempCount = 0
+        let lengthPos = 0
+        for (const char of str) {
+            if (!isDelimiterFound && char !== this.delimiter) {
+                if (char !== ",") {
+                    tempChar = tempChar.concat(char)
+                } else {
+                    lengths.push(Number(tempChar))
+                    tempChar = "" //reset the temp
                 }
-                loopCount++
                 continue
             }
 
-            if (lowestCount < numCount) {
-                topK[lowestNumIdx] = {
-                    num: num,
-                    numCount: numCount
-                }
-
-                const [newLowestNumIdx, newLowestCount]=findLowestCount(topK)
-                lowestCount = newLowestCount
-                lowestNumIdx = newLowestNumIdx
+            if (!isDelimiterFound && char === this.delimiter) {
+                isDelimiterFound = true
+                tempChar = ""
+                continue
             }
-            loopCount++
-
+            let currLength = lengths[lengthPos]!
+            while (currLength === 0) {
+                tempCount = 0
+                lengthPos += 1
+                result.push(tempChar)
+                currLength = lengths[lengthPos]!
+            }
+            if (tempCount < currLength) {
+                tempChar = tempChar.concat(char)
+                tempCount++
+                if (tempCount === currLength) {
+                    tempCount = 0
+                    lengthPos += 1
+                    result.push(tempChar)
+                    tempChar = ""
+                }
+            }
+        }
+        while (lengths.length !== result.length) {
+            result.push("")
         }
 
-        const result = new Array<number>()
-        for (const { num } of topK) {
-            result.push(num)
-        }
         return result
     }
 }
@@ -79,4 +79,17 @@ class Solution {
 
 const obj = new Solution();
 // console.log(obj.topKFrequent([1, 5, 5, 5, 5, 5, 2, 2, 2, 2, 3, 3, 3,3,3, 4, 4], 2))
-console.log(obj.topKFrequent([4, 1, -1, 2, -1, 2, 3], 2))
+// const encodedStr = obj.encode(["Hello", "World"])
+// console.log(encodedStr)
+// console.log(obj.decode(encodedStr))
+// const encodedStr2 = obj.encode(["", "   ", "!@#$%^&*()_+", "LongStringWithNoSpaces", "Another, String With, Commas"])
+// console.log(encodedStr2)
+// console.log(obj.decode(encodedStr2))
+
+const encodedStr3 = obj.encode([""])
+console.log(encodedStr3)
+console.log(obj.decode(encodedStr3))
+
+// const encodedStr4 = obj.encode([])
+// console.log(encodedStr4)
+// console.log(obj.decode(encodedStr4))
