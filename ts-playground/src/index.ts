@@ -78,14 +78,6 @@ class Solution {
 
 
 const obj = new Solution();
-// console.log(obj.topKFrequent([1, 5, 5, 5, 5, 5, 2, 2, 2, 2, 3, 3, 3,3,3, 4, 4], 2))
-// const encodedStr = obj.encode(["Hello", "World"])
-// console.log(encodedStr)
-// console.log(obj.decode(encodedStr))
-// const encodedStr2 = obj.encode(["", "   ", "!@#$%^&*()_+", "LongStringWithNoSpaces", "Another, String With, Commas"])
-// console.log(encodedStr2)
-// console.log(obj.decode(encodedStr2))
-
 const encodedStr3 = obj.encode([""])
 console.log(encodedStr3)
 console.log(obj.decode(encodedStr3))
