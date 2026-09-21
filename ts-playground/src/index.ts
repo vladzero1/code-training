@@ -1,75 +1,28 @@
 class Solution {
     /**
-     * @param {string[]} strs
-     * @returns {string}
+     * @param {number[]} nums
+     * @return {number[]}
      */
-    private delimiter = "+"
-    encode(strs: string[]): string {
-        if (strs.length === 0) {
-            return ""
-        }
-        let sizePerGroup = ""
-        let result = ""
-        for (const str of strs) {
-            sizePerGroup = sizePerGroup.concat(str.length.toString()).concat(",")
-            result = result.concat(str)
-        }
+    productExceptSelf(nums: number[]): number[] {
+        const result: number[] = Array<number>(nums.length).fill(1);
 
-        let finalResult = sizePerGroup.concat(this.delimiter).concat(result)
-        return finalResult
-    }
-
-    /**
-     * @param {string} str
-     * @returns {string[]}
-     */
-    decode(str: string): string[] {
-        if (str.length === 0) {
-            return []
+        // calculate Prefix
+        let prevPrefix = 1;
+        for (let i = 0; i < nums.length; i++) {
+            const num = nums[i]!;
+            // to calculate the prefix we will always multiply it with the prev Index
+            result[i]! *= prevPrefix;
+            prevPrefix *= num;
+            // console.log("pref=",prevPrefix)
         }
-
-        let tempChar = ""
-        let lengths: number[] = []
-        let result: string[] = []
-        let isDelimiterFound = false
-        let tempCount = 0
-        let lengthPos = 0
-        for (const char of str) {
-            if (!isDelimiterFound && char !== this.delimiter) {
-                if (char !== ",") {
-                    tempChar = tempChar.concat(char)
-                } else {
-                    lengths.push(Number(tempChar))
-                    tempChar = "" //reset the temp
-                }
-                continue
-            }
-
-            if (!isDelimiterFound && char === this.delimiter) {
-                isDelimiterFound = true
-                tempChar = ""
-                continue
-            }
-            let currLength = lengths[lengthPos]!
-            while (currLength === 0) {
-                tempCount = 0
-                lengthPos += 1
-                result.push(tempChar)
-                currLength = lengths[lengthPos]!
-            }
-            if (tempCount < currLength) {
-                tempChar = tempChar.concat(char)
-                tempCount++
-                if (tempCount === currLength) {
-                    tempCount = 0
-                    lengthPos += 1
-                    result.push(tempChar)
-                    tempChar = ""
-                }
-            }
-        }
-        while (lengths.length !== result.length) {
-            result.push("")
+        // console.log(result)
+        // calculate Suffix
+        let prevSuffix = 1;
+        for (let i = nums.length - 1; i >= 0; i--) {
+            const num = nums[i]!;
+            // to calculate the suffix we will always multiply it with the right Index which we store on prevSuffix
+            result[i]! *= prevSuffix;
+            prevSuffix *= num
         }
 
         return result
@@ -78,9 +31,10 @@ class Solution {
 
 
 const obj = new Solution();
-const encodedStr3 = obj.encode([""])
-console.log(encodedStr3)
-console.log(obj.decode(encodedStr3))
+//1. [1,1,2,8] suffix [48,24,6,1]
+console.log(obj.productExceptSelf([1, 2, 4, 6])) // [48,24,12,8]
+console.log(obj.productExceptSelf([-1, 0, 1, 2, 3])) // [0,-6,0,0,0]
+console.log(obj.productExceptSelf([-1, 0, 0, 2, 3]))
 
 // const encodedStr4 = obj.encode([])
 // console.log(encodedStr4)
