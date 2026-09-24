@@ -1,37 +1,85 @@
 class Solution {
     /**
-     * @param {number[]} nums
-     * @return {number[]}
+     * @param {character[][]} board
+     * @return {boolean}
      */
-    productExceptSelf(nums: number[]): number[] {
-        const result: number[] = Array<number>(nums.length).fill(1);
+    isValidSudoku(board: string[][]): boolean {
 
-        // calculate Prefix
-        let prevPrefix = 1;
-        for (let i = 0; i < nums.length; i++) {
-            const num = nums[i]!;
-            // to calculate the prefix we will always multiply it with the prev Index
-            result[i]! *= prevPrefix;
-            prevPrefix *= num;
-            // console.log("pref=",prevPrefix)
-        }
-        // console.log(result)
-        // calculate Suffix
-        let prevSuffix = 1;
-        for (let i = nums.length - 1; i >= 0; i--) {
-            const num = nums[i]!;
-            // to calculate the suffix we will always multiply it with the right Index which we store on prevSuffix
-            result[i]! *= prevSuffix;
-            prevSuffix *= num
-        }
+        // 3x3 sub-boxes dimension
+        const subBoxesXY = 3;
+        for (let i = 0; i < board.length; i++) {
+            // check sub-boxes validity
+            const map = new Map<string, boolean>();
+            for (let j = 0; j < subBoxesXY; j++) {
+                for (let k = 0; k < subBoxesXY; k++) {
+                    const idxX = j + (Math.floor(i / subBoxesXY) * subBoxesXY);
+                    const idxY = k + (i % subBoxesXY * subBoxesXY);
+                    const grid = board[idxX]![idxY]!;
+                    if (map.has(grid) && grid != ".") {
+                        return false;
+                    }
+                    map.set(grid, true);
+                    // console.log(`grid=${grid} - [${idxX}][${idxY}]`)
+                }
+            }
 
-        return result
+            // check row validity
+            const rowMap = new Map<string, boolean>();
+            for (let j = 0; j < board[i]!.length; j++) {
+                const grid = board[i]![j]!;
+                if (rowMap.has(grid) && grid != ".") {
+                    return false;
+                }
+                rowMap.set(grid, true);
+                // console.log(`grid=${grid} - [${i}][${j}]`)
+            }
+
+            // check Column validity
+            const colMap = new Map<string, boolean>();
+            for (let j = 0; j < board[i]!.length; j++) {
+                const grid = board[j]![i]!;
+                if (colMap.has(grid) && grid != ".") {
+                    return false;
+                }
+                colMap.set(grid, true);
+                // console.log(`grid=${grid} - [${i}][${j}]`)
+            }
+        }
+        
+        return true;
     }
 }
 
-
 const obj = new Solution();
-//1. [1,1,2,8] suffix [48,24,6,1]
-console.log(obj.productExceptSelf([1, 2, 4, 6])) // [48,24,12,8]
-console.log(obj.productExceptSelf([-1, 0, 1, 2, 3])) // [0,-6,0,0,0]
-console.log(obj.productExceptSelf([-1, 0, 0, 2, 3]))
+// console.log(obj.isValidSudoku([
+//     ["1", "2", ".", ".", "3", ".", ".", ".", "."],
+//     ["4", ".", ".", "5", ".", ".", ".", ".", "."],
+//     [".", "9", "1", ".", ".", ".", ".", ".", "3"],
+//     ["5", ".", ".", ".", "6", ".", ".", ".", "4"],
+//     [".", ".", ".", "8", ".", "3", ".", ".", "5"],
+//     ["7", ".", ".", ".", "2", ".", ".", ".", "6"],
+//     [".", ".", ".", ".", ".", ".", "2", ".", "."],
+//     [".", ".", ".", "4", "1", "9", ".", ".", "8"],
+//     [".", ".", ".", ".", "8", ".", ".", "7", "9"]])) //false
+
+// console.log(obj.isValidSudoku([
+//     ["1", "2", ".", ".", "3", ".", ".", ".", "."],
+//     ["4", ".", ".", "5", ".", ".", ".", ".", "."],
+//     [".", "9", "8", ".", ".", ".", ".", ".", "3"],
+//     ["5", ".", ".", ".", "6", ".", ".", ".", "4"],
+//     [".", ".", ".", "8", ".", "3", ".", ".", "5"],
+//     ["7", ".", ".", ".", "2", ".", ".", ".", "6"],
+//     [".", ".", ".", ".", ".", ".", "2", ".", "."],
+//     [".", ".", ".", "4", "1", "9", ".", ".", "8"],
+//     [".", ".", ".", ".", "8", ".", ".", "7", "9"]])) //true
+
+console.log(obj.isValidSudoku([
+    ["1", "2", ".", ".", "3", ".", ".", ".", "."],
+    ["4", ".", ".", ".", ".", ".", ".", ".", "."],
+    [".", "9", "8", ".", ".", ".", ".", ".", "3"],
+    ["5", ".", ".", ".", "6", ".", ".", ".", "4"],
+    [".", ".", ".", ".", ".", "3", ".", ".", "5"],
+    ["7", ".", ".", ".", "2", ".", ".", ".", "6"],
+    [".", ".", ".", ".", ".", ".", "2", ".", "."],
+    [".", ".", ".", ".", "1", "9", ".", ".", "8"],
+    [".", ".", ".", ".", "8", ".", ".", "7", "9"]])) //false
